@@ -10,6 +10,7 @@ const ProductForm = (props) => {
   };
 
   var [values, setValues] = useState(initialFieldValues);
+  var [imageFile, setImageAsFile] = useState();
 
   useEffect(() => {
     if (props.currentId == '') setValues({ ...initialFieldValues });
@@ -29,8 +30,13 @@ const ProductForm = (props) => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    props.addOrEdit(values);
+    props.addOrEdit(values, imageFile);
   };
+  const handleImageAsFile = (e) => { // lấy event theo kiểu file vì file có kiểu event khác với text
+    console.log("file image",e);
+    const image = e.target.files[0]
+    setImageAsFile(imageFile => (image))
+}
 
   return (
     <form autoComplete="off" onSubmit={handleFormSubmit}>
@@ -46,7 +52,7 @@ const ProductForm = (props) => {
           name="image"
           placeholder="Image"
           value={values.image}
-          onChange={handleInputChange}
+          onChange={handleImageAsFile}
         />
       </div>
       <div className="form-row">

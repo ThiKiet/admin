@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Imgage } from 'react-bootstrap'
 import ProductForm from './ProductForm';
-import firebaseDb from '../firebase';
+import {DB, Storage} from '../firebase';
 import Gongcha from '../asses/gongcha.jpg'
 
 
 const Products = () => {
   var [currentId, setCurrentId] = useState('');
   var [productObjects, setProductObjects] = useState({});
+  const [ImageAsUrl, setImageAsUrl] = useState()
+ 
 
   useEffect(() => {
-    firebaseDb.child('products').on('value', (snapshot) => {
+    DB.ref().child('products').on('value', (snapshot) => {
       if (snapshot.val() != null) {
         setProductObjects({
           ...snapshot.val(),
@@ -19,22 +21,36 @@ const Products = () => {
     });
   }, []);
 
-  const addOrEdit = (obj) => {
-    if (currentId === '')
-      firebaseDb.child('products').push(obj, (err) => {
-        if (err) console.log(err);
-        else setCurrentId('');
-      });
-    else
-      firebaseDb.child(`products/${currentId}`).set(obj, (err) => {
-        if (err) console.log(err);
-        else setCurrentId('');
-      });
+  const addOrEdit = (obj, image_url) => {
+  
+     let upload = Storage.ref().child(`product-img/${image_url.name}`).put(image_url)
+      upload.on('state_changed', 
+    (snapShot) => {
+      
+      console.log(snapShot)
+    }, (err) => {
+      
+      console.log(err)
+    }, () => {
+      
+      Storage.ref('product-img').child(image_url.name).getDownloadURL()
+       .then(fireBaseUrl => {
+        
+        DB.ref().child('products').push({name: obj.name, image: fireBaseUrl, category: obj.category, price: obj.price}, (err) => {
+        
+          if (err) console.log(err);
+          else setCurrentId('');
+        })
+   
+       })
+    })
+      
+    console.log("log imgage link", ImageAsUrl);
   };
 
   const onDelete = (id) => {
     if (window.confirm('Are you sure to delete this record?')) {
-      firebaseDb.child(`products/${id}`).remove((err) => {
+      DB.ref().child(`products/${id}`).remove((err) => {
         if (err) console.log(err);
         else setCurrentId('');
       });

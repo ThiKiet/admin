@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Imgage } from 'react-bootstrap'
 import ProductForm from './ProductForm';
-import firebaseDb from '../firebase';
+import {DB} from '../firebase';
 
 const CardItem = () => {
   var [currentId, setCurrentId] = useState('');
   var [productObjects, setProductObjects] = useState({});
 
   useEffect(() => {
-    firebaseDb.child('products').on('value', (snapshot) => {
+    DB.ref().child('products').on('value', (snapshot) => {
       if (snapshot.val() != null) {
         setProductObjects({
           ...snapshot.val(),

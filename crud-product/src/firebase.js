@@ -11,7 +11,8 @@ var firebaseConfig = {
 	measurementId: 'G-7CMBMYCJEG',
 };
 
-var fireDb = firebase.initializeApp(firebaseConfig);
-
-export default fireDb.database().ref();
+var fire = firebase.initializeApp(firebaseConfig);
+export const DB = fire.database();
+export const Storage = fire.storage();
+ 
 
